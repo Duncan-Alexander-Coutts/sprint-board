@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { getCurrentSprint } from "../service/issue-service.js";
+import classNames from "classnames";
 
-const statuses = ["To Do", "In Progress", "Code Review", "Done"];
+const issueStati = ["Open", "In Progress", "Done"];
+const taskStati = ["To Do", "In Progress", "Code Review", "Done"];
+
+const issueStatiClasses = {
+  [issueStati[0]]: "open",
+  [issueStati[1]]: "in-progress",
+  [issueStati[2]]: "done"
+};
 
 const Board = () => {
   const [issues, setIssues] = useState([]);
@@ -12,8 +20,7 @@ const Board = () => {
       {subtasks
         .filter(
           subtask =>
-            subtask.fields.status.statusCategory.name.toLowerCase() ===
-            status.toLowerCase()
+            subtask.fields.status.name.toLowerCase() === status.toLowerCase()
         )
         .map(subtask => (
           <div className="sub-task-container">{subtask.fields.summary}</div>
@@ -21,25 +28,36 @@ const Board = () => {
     </div>
   );
 
+  const isIssueDone = issue => issue.fields.status.name === "Done";
+
   const renderIssueContent = issue => {
-    console.log(issue.fields.subtasks);
     return (
       <div>
-        <div className="issue">
-          <h5>
-            {issue.key} - {issue.fields.summary}
-          </h5>
-        </div>
         <div
-          className="sub-task-grid"
-          style={{
-            gridTemplateColumns: `repeat(${statuses.length}, minmax(0, 1fr))`
-          }}
-        >
-          {statuses.map(status =>
-            renderSubTasksForStatus(issue.fields.subtasks, status)
+          className={classNames(
+            "issue",
+            issueStatiClasses[issue.fields.status.name]
           )}
+        >
+          {issue.fields.assignee && (
+            <img src={issue.fields.assignee.avatarUrls["16x16"]}></img>
+          )}
+          <h4>
+            {issue.key} - {issue.fields.summary} - {issue.fields.status.name}
+          </h4>
         </div>
+        {!isIssueDone(issue) && (
+          <div
+            className="sub-task-grid"
+            style={{
+              gridTemplateColumns: `repeat(${taskStati.length}, minmax(0, 1fr))`
+            }}
+          >
+            {taskStati.map(status =>
+              renderSubTasksForStatus(issue.fields.subtasks, status)
+            )}
+          </div>
+        )}
       </div>
     );
   };

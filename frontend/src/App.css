@@ -1,19 +1,43 @@
-html {
+body {
   font-family: "Montserrat", sans-serif;
 }
 
 ul.issue-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 ul.issue-list li {
   display: block;
-  margin-bottom: 4px;
 }
 
 .issue {
-  /* background-color: silver; */
+  display: flex;
+  align-items: center;
+}
+
+.issue.in-progress {
+  background-color: #cf9b2c;
+  color: white;
+}
+
+.issue.done {
+  text-decoration: line-through;
+  background-color: #63a5a9;
+  color: white;
+}
+
+.issue.open h4 {
+  font-weight: normal;
+  opacity: 0.5;
+}
+
+.issue img {
+  display: inline;
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
 }
 
 .sub-task-grid {
@@ -25,11 +49,6 @@ ul.issue-list li {
 .sub-task-column {
   background-color: #f4f5f7;
 }
-
-.sub-task-column:not(:last-child) {
-  /* border-right: 1px solid black; */
-}
-
 .sub-task-container {
   border: 1px solid slategray;
   /* border-left: none;
@@ -42,6 +61,6 @@ ul.issue-list li {
   font-size: small;
 }
 
-h5 {
-  margin: 8px 0 8px 0;
+h4 {
+  margin: 4px 0 4px 0;
 }
