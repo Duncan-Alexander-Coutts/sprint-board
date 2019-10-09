@@ -61,6 +61,14 @@ ul.issue-list li {
   font-size: small;
 }
 
+.loading-indicator-container {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 h4 {
   margin: 4px 0 4px 0;
 }

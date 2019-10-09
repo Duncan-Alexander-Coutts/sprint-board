@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getCurrentSprint } from "../service/issue-service.js";
+import { RotateLoader } from "react-spinners";
 import classNames from "classnames";
 
 const issueStati = ["Open", "In Progress", "Done"];
@@ -14,6 +15,7 @@ const issueStatiClasses = {
 const Board = () => {
   const [issues, setIssues] = useState([]);
   const [sprint, setSprint] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const renderSubTasksForStatus = (subtasks, status) => (
     <div className="sub-task-column">
@@ -70,15 +72,22 @@ const Board = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const activeSprint = await getCurrentSprint();
       setSprint(activeSprint.sprint);
       setIssues(activeSprint.issues);
+      setIsLoading(false);
     };
     fetchData();
   }, []);
 
   return (
     <div>
+      {isLoading && (
+        <div className="loading-indicator-container">
+          <RotateLoader color="#63a5a9" />
+        </div>
+      )}
       <ul className="issue-list">{renderIssues()}</ul>
     </div>
   );
