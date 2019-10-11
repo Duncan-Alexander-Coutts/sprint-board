@@ -27,7 +27,7 @@ app.get("/currentsprint", async (req, res) => {
   const sprintIssues = await jira.board.getIssuesForSprint({
     boardId: juralioBoard.id,
     sprintId: activeSprint.id,
-    maxResults: 100
+    maxResults: 1000
   });
   res.json({
     sprint: activeSprint,
