@@ -3,13 +3,15 @@ import { getCurrentSprint } from "../service/issue-service.js";
 import { RotateLoader } from "react-spinners";
 import classNames from "classnames";
 
-const issueStati = ["Open", "In Progress", "Done"];
-const taskStati = ["To Do", "In Progress", "Code Review", "Done"];
+const issueStati = ["Open", "In Progress", "Done", "Resolved"];
+const completedIssueStatiStartIndex = 2;
+const taskStati = ["Open", "In Progress", "Code Review", "Done"];
 
 const issueStatiClasses = {
   [issueStati[0]]: "open",
   [issueStati[1]]: "in-progress",
-  [issueStati[2]]: "done"
+  [issueStati[2]]: "done",
+  [issueStati[3]]: "done"
 };
 
 const Board = () => {
@@ -18,14 +20,16 @@ const Board = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const renderSubTasksForStatus = (subtasks, status) => (
-    <div className="sub-task-column">
+    <div key={status} className="sub-task-column">
       {subtasks
         .filter(
           subtask =>
             subtask.fields.status.name.toLowerCase() === status.toLowerCase()
         )
         .map(subtask => (
-          <div className="sub-task-container">{subtask.fields.summary}</div>
+          <div key={subtask.key} className="sub-task-container">
+            {subtask.fields.summary}
+          </div>
         ))}
     </div>
   );
@@ -64,9 +68,28 @@ const Board = () => {
     );
   };
 
+  const sortCompletedIssuesFirst = (a, b) => {
+    const aStatusIndex = issueStati.indexOf(a.fields.status.name);
+    const bStatusIndex = issueStati.indexOf(b.fields.status.name);
+
+    if (
+      aStatusIndex >= completedIssueStatiStartIndex &&
+      bStatusIndex < completedIssueStatiStartIndex
+    ) {
+      return -1;
+    } else if (
+      bStatusIndex >= completedIssueStatiStartIndex &&
+      aStatusIndex < completedIssueStatiStartIndex
+    ) {
+      return 1;
+    }
+    return 0;
+  };
+
   const renderIssues = () => {
     return issues
       .filter(issue => issue.fields.issuetype.name !== "Sub-task")
+      .sort(sortCompletedIssuesFirst)
       .map(issue => <li key={issue.id}>{renderIssueContent(issue)}</li>);
   };
 
