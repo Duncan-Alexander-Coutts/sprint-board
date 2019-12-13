@@ -1,17 +1,17 @@
+const properties = require("./properties.json");
 const express = require("express");
 const app = express();
 var cors = require("cors");
-const request = require("request-promise-native");
 var JiraClient = require("jira-connector");
 const port = 3001;
 
 app.use(cors());
 
 var jira = new JiraClient({
-  host: "address",
+  host: properties.host,
   basic_auth: {
-    email: "email-address",
-    api_token: "api-token"
+    email: properties.credentials.email,
+    api_token: properties.credentials.token
   }
 });
 
