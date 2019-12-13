@@ -14,9 +14,13 @@ const issueStatiClasses = {
   [issueStati[3]]: "done"
 };
 
+const scrollToFirstIncompleteItem = () => {
+  const incompleteItem = document.querySelector(".issue:not(.done)");
+  incompleteItem && incompleteItem.scrollIntoView(true);
+};
+
 const Board = () => {
   const [issues, setIssues] = useState([]);
-  const [sprint, setSprint] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const renderSubTasksForStatus = (subtasks, status) => (
@@ -46,7 +50,10 @@ const Board = () => {
           )}
         >
           {issue.fields.assignee && (
-            <img src={issue.fields.assignee.avatarUrls["16x16"]}></img>
+            <img
+              alt={`Avatar of ${issue.fields.assignee.name}`}
+              src={issue.fields.assignee.avatarUrls["16x16"]}
+            ></img>
           )}
           <h4>
             {issue.key} - {issue.fields.summary} - {issue.fields.status.name}
@@ -97,9 +104,9 @@ const Board = () => {
     const fetchData = async () => {
       setIsLoading(true);
       const activeSprint = await getCurrentSprint();
-      setSprint(activeSprint.sprint);
       setIssues(activeSprint.issues);
       setIsLoading(false);
+      scrollToFirstIncompleteItem();
     };
     fetchData();
   }, []);
