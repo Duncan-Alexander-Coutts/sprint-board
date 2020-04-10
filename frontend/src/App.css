@@ -45,6 +45,22 @@ ul.issue-list li {
 
 .latest-complete-indicator {
   margin-left: 4px;
+  animation: indicator-fade-in 2s;
+}
+
+@keyframes indicator-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(5) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(369deg);
+  }
 }
 
 .sub-task-grid {
