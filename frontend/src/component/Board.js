@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getCurrentSprint } from "../service/issue-service.js";
 import { RotateLoader } from "react-spinners";
 import classNames from "classnames";
+import { wasCompletedOnLastWorkingDay } from "../helper/issue-helper.js";
 
 const issueStati = ["Open", "In Progress", "Done", "Resolved"];
 const completedIssueStatiStartIndex = 2;
@@ -11,12 +12,14 @@ const issueStatiClasses = {
   [issueStati[0]]: "open",
   [issueStati[1]]: "in-progress",
   [issueStati[2]]: "done",
-  [issueStati[3]]: "done"
+  [issueStati[3]]: "done",
 };
 
-const scrollToFirstIncompleteItem = () => {
-  const incompleteItem = document.querySelector(".issue:not(.done)");
-  incompleteItem && incompleteItem.scrollIntoView(true);
+const scrollToItemsCompletedOnPreviousWorkDay = () => {
+  setTimeout(() => {
+    const completeItem = document.querySelector(".latest-complete");
+    completeItem && completeItem.scrollIntoView(true);
+  });
 };
 
 const Board = () => {
@@ -27,10 +30,10 @@ const Board = () => {
     <div key={status} className="sub-task-column">
       {subtasks
         .filter(
-          subtask =>
+          (subtask) =>
             subtask.fields.status.name.toLowerCase() === status.toLowerCase()
         )
-        .map(subtask => (
+        .map((subtask) => (
           <div key={subtask.key} className="sub-task-container">
             {subtask.fields.summary}
           </div>
@@ -38,15 +41,19 @@ const Board = () => {
     </div>
   );
 
-  const isIssueDone = issue => issue.fields.status.name === "Done";
+  const isIssueDone = (issue) => issue.fields.status.name === "Done";
 
-  const renderIssueContent = issue => {
+  const renderIssueContent = (issue) => {
+    const isNewlyCompleted = wasCompletedOnLastWorkingDay(issue);
     return (
       <div>
         <div
           className={classNames(
             "issue",
-            issueStatiClasses[issue.fields.status.name]
+            issueStatiClasses[issue.fields.status.name],
+            {
+              "latest-complete": isNewlyCompleted,
+            }
           )}
         >
           {issue.fields.assignee && (
@@ -55,18 +62,28 @@ const Board = () => {
               src={issue.fields.assignee.avatarUrls["16x16"]}
             ></img>
           )}
+
           <h4>
             {issue.key} - {issue.fields.summary} - {issue.fields.status.name}
           </h4>
+          {isNewlyCompleted && (
+            <span
+              class="latest-complete-indicator"
+              role="img"
+              aria-label="Rocket emoji"
+            >
+              🚀
+            </span>
+          )}
         </div>
         {!isIssueDone(issue) && (
           <div
             className="sub-task-grid"
             style={{
-              gridTemplateColumns: `repeat(${taskStati.length}, minmax(0, 1fr))`
+              gridTemplateColumns: `repeat(${taskStati.length}, minmax(0, 1fr))`,
             }}
           >
-            {taskStati.map(status =>
+            {taskStati.map((status) =>
               renderSubTasksForStatus(issue.fields.subtasks, status)
             )}
           </div>
@@ -95,9 +112,9 @@ const Board = () => {
 
   const renderIssues = () => {
     return issues
-      .filter(issue => issue.fields.issuetype.name !== "Sub-task")
+      .filter((issue) => issue.fields.issuetype.name !== "Sub-task")
       .sort(sortCompletedIssuesFirst)
-      .map(issue => <li key={issue.id}>{renderIssueContent(issue)}</li>);
+      .map((issue) => <li key={issue.id}>{renderIssueContent(issue)}</li>);
   };
 
   useEffect(() => {
@@ -106,7 +123,7 @@ const Board = () => {
       const activeSprint = await getCurrentSprint();
       setIssues(activeSprint.issues);
       setIsLoading(false);
-      scrollToFirstIncompleteItem();
+      scrollToItemsCompletedOnPreviousWorkDay();
     };
     fetchData();
   }, []);

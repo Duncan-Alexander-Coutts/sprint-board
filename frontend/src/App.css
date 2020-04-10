@@ -23,9 +23,12 @@ ul.issue-list li {
 }
 
 .issue.done {
-  text-decoration: line-through;
   background-color: #63a5a9;
   color: white;
+}
+
+.issue.done h4 {
+  text-decoration: line-through;
 }
 
 .issue.open h4 {
@@ -38,6 +41,10 @@ ul.issue-list li {
   width: 24px;
   height: 24px;
   margin-right: 4px;
+}
+
+.latest-complete-indicator {
+  margin-left: 4px;
 }
 
 .sub-task-grid {
