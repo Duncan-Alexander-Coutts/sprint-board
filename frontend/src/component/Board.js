@@ -68,7 +68,7 @@ const Board = () => {
           </h4>
           {isNewlyCompleted && (
             <span
-              class="latest-complete-indicator"
+              className="latest-complete-indicator"
               role="img"
               aria-label="Rocket emoji"
             >
