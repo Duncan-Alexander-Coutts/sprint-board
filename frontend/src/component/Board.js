@@ -15,10 +15,15 @@ const issueStatiClasses = {
   [issueStati[3]]: "done",
 };
 
-const scrollToItemsCompletedOnPreviousWorkDay = () => {
+const scrollToCompletedOrInProgressItems = () => {
   setTimeout(() => {
     const completeItem = document.querySelector(".latest-complete");
     completeItem && completeItem.scrollIntoView(true);
+
+    if (!completeItem) {
+      const inProgressItem = document.querySelector(".in-progress");
+      inProgressItem && inProgressItem.scrollIntoView(true);
+    }
   });
 };
 
@@ -62,7 +67,7 @@ const Board = () => {
               src={issue.fields.assignee.avatarUrls["16x16"]}
             ></img>
           )}
-
+          <span className="story-points">{issue.fields.customfield_10008}</span>
           <h4>
             {issue.key} - {issue.fields.summary} - {issue.fields.status.name}
           </h4>
@@ -110,10 +115,24 @@ const Board = () => {
     return 0;
   };
 
+  const sortByResolutionDateAscending = (a, b) => {
+    const aDateUnParsed = a.fields.resolutiondate;
+    const bDateUnParsed = b.fields.resolutiondate;
+
+    if (!aDateUnParsed || !bDateUnParsed) {
+      return 0;
+    }
+
+    var dateA = new Date(a.fields.resolutiondate),
+      dateB = new Date(b.fields.resolutiondate);
+    return dateA - dateB;
+  };
+
   const renderIssues = () => {
     return issues
       .filter((issue) => issue.fields.issuetype.name !== "Sub-task")
       .sort(sortCompletedIssuesFirst)
+      .sort(sortByResolutionDateAscending)
       .map((issue) => <li key={issue.id}>{renderIssueContent(issue)}</li>);
   };
 
@@ -123,7 +142,7 @@ const Board = () => {
       const activeSprint = await getCurrentSprint();
       setIssues(activeSprint.issues);
       setIsLoading(false);
-      scrollToItemsCompletedOnPreviousWorkDay();
+      scrollToCompletedOrInProgressItems();
     };
     fetchData();
   }, []);

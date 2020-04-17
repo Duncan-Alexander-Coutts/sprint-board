@@ -48,6 +48,18 @@ ul.issue-list li {
   animation: indicator-fade-in 2s;
 }
 
+.story-points {
+  margin-right: 8px;
+  margin-left: 4px;
+  background: white;
+  color: black;
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
+  line-height: 17px;
+  text-align: center;
+}
+
 @keyframes indicator-fade-in {
   0% {
     opacity: 0;
